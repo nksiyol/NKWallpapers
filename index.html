@@ -97,6 +97,19 @@
   transform: scale(1.15); /* Zoom in on bass hit */
   box-shadow: 0 0 40px var(--neon-purple), 0 0 80px var(--neon-blue);
 }
+        .visualizer::after {
+  content: '';
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--neon-pink), transparent);
+  opacity: 0.05;
+  z-index: 0;
+  pointer-events: none;
+        }
+
+
         
         .visualizer::before {
             content: '';
@@ -507,10 +520,10 @@
                         }
                     });
 
-                    if (bassEnergy > 120) {
-                        visualizer.classList.add('bass-pulse');
-                        setTimeout(() => visualizer.classList.remove('bass-pulse'), 200);
-                    }
+                   if (bassEnergy > 90) { // more sensitive to lower bass
+    visualizer.classList.add('bass-pulse');
+    setTimeout(() => visualizer.classList.remove('bass-pulse'), 200);
+                   }
 
                     requestAnimationFrame(updateVisualizer);
                 }
