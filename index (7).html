@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Music Player</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Montserrat:wght@400;600&display=swap');
+        
+        :root {
+            --neon-blue: #00f0ff;
+            --neon-purple: #b400ff;
+            --neon-pink: #ff00e6;
+            --neon-green: #00ff9d;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #0a0a15;
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .futuristic-font {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+        }
+        
+        .neon-text {
+            text-shadow: 0 0 10px var(--neon-blue), 
+                         0 0 20px var(--neon-purple), 
+                         0 0 30px var(--neon-pink);
+            animation: flicker 3s infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                text-shadow: 0 0 10px var(--neon-blue), 
+                             0 0 20px var(--neon-purple), 
+                             0 0 30px var(--neon-pink);
+            }
+            20%, 24%, 55% {
+                text-shadow: none;
+            }
+        }
+        
+        .neon-border {
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue), 
+                        inset 0 0 10px var(--neon-blue);
+        }
+        
+        .neon-button {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--neon-blue);
+            color: white;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+        
+        .neon-button:hover {
+            background: var(--neon-blue);
+            color: black;
+            box-shadow: 0 0 20px var(--neon-blue), 
+                       0 0 40px var(--neon-blue);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .visualizer {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        
+        .visualizer.bass-pulse {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px var(--neon-purple);
+        }
+        
+        .visualizer::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 240, 255, 0.2), transparent);
+            opacity: 0.5;
+        }
+        
+        .music-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 80px;
+            color: var(--neon-purple);
+            opacity: 0.3;
+            z-index: 1;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+            50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.5; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+        }
+        
+        .waveform {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+        
+        .waveform.playing .waveform-bar {
+            animation: none;
+        }
+        
+        .waveform-bar {
+            width: 4px;
+            height: 10px;
+            background: var(--neon-blue);
+            margin: 0 2px;
+            border-radius: 10px;
+            animation: equalize 1.2s infinite ease-in-out;
+            animation-delay: calc(var(--i) * 0.1s);
+            box-shadow: 0 0 10px var(--neon-blue), 0 0 15px var(--neon-pink);
+            transition: height 0.1s ease, background 0.2s ease;
+        }
+        
+        .waveform-bar.beat {
+            background: var(--neon-pink);
+            box-shadow: 0 0 15px var(--neon-pink), 0 0 25px var(--neon-green);
+        }
+        
+        @keyframes equalize {
+            0%, 100% { height: 10px; }
+            50% { height: 30px; }
+        }
+        
+        .visualizer-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        
+        .visualizer-particles.playing {
+            opacity: 1;
+        }
+        
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        
+        .upload-area {
+            border: 2px dashed var(--neon-purple);
+            transition: all 0.3s;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 20px var(--neon-purple);
+        }
+        
+        .upload-area.drag-over {
+            background: rgba(180, 0, 255, 0.1);
+            border-color: var(--neon-green);
+        }
+        
+        .social-icon {
+            transition: all 0.3s;
+            filter: drop-shadow(0 0 5px currentColor);
+        }
+        
+        .social-icon:hover {
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 15px currentColor);
+        }
+        
+        .playlist-item:hover {
+            background: rgba(0, 240, 255, 0.1);
+            cursor: pointer;
+        }
+        
+        .playlist-item.active {
+            background: rgba(0, 240, 255, 0.2);
+            border-left: 3px solid var(--neon-blue);
+        }
+        
+        @media (max-width: 768px) {
+            .visualizer {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .waveform-bar {
+                width: 3px;
+                margin: 0 1px;
+            }
+            
+            .music-icon {
+                font-size: 60px;
+            }
+        }
+    </style>
+</head>
+<body class="relative">
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+    
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 neon-text futuristic-font">
+                NK MUSIC PLAYER
+            </h1>
+            <p class="text-lg text-gray-300">Feel the rhythm of the future</p>
+        </header>
+        
+        <!-- Main Player Section -->
+        <section class="glass-card p-6 mb-12 neon-border">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                <!-- Visualizer -->
+                <div class="visualizer mb-8 md:mb-0">
+                    <div id="visualizer-particles" class="visualizer-particles"></div>
+                    <i class="fas fa-music music-icon"></i>
+                    <div class="waveform">
+                        <div class="waveform-bar" style="--i:0"></div>
+                        <div class="waveform-bar" style="--i:1"></div>
+                        <div class="waveform-bar" style="--i:2"></div>
+                        <div class="waveform-bar" style="--i:3"></div>
+                        <div class="waveform-bar" style="--i:4"></div>
+                        <div class="waveform-bar" style="--i:5"></div>
+                        <div class="waveform-bar" style="--i:6"></div>
+                        <div class="waveform-bar" style="--i:7"></div>
+                        <div class="waveform-bar" style="--i:8"></div>
+                        <div class="waveform-bar" style="--i:9"></div>
+                        <div class="waveform-bar" style="--i:10"></div>
+                        <div class="waveform-bar" style="--i:11"></div>
+                    </div>
+                </div>
+                
+                <!-- Player Controls -->
+                <div class="flex-1 w-full">
+                    <div class="text-center mb-6">
+                        <h2 id="current-song" class="text-2xl font-bold mb-1">No song selected</h2>
+                        <p id="current-artist" class="text-gray-300">-</p>
+                    </div>
+                    
+                    <div class="flex justify-center items-center mb-6">
+                        <button id="play-btn" class="neon-button p-4 rounded-full mx-3 text-xl">
+                            <i class="fas fa-play"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span id="current-time">0:00</span>
+                            <span id="total-time">0:00</span>
+                        </div>
+                        <input type="range" id="progress-bar" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <i class="fas fa-volume-up mr-2 text-neon-blue"></i>
+                        <input type="range" id="volume-control" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="70">
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Playlist Section -->
+        <section class="glass-card p-6 mb-12 neon-border">
+            <h2 class="text-2xl font-bold mb-4 futuristic-font">PLAYLIST</h2>
+            <div class="flex justify-between mb-4">
+                <button id="prev-btn" class="neon-button p-2 rounded-full">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <button id="next-btn" class="neon-button p-2 rounded-full">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+            </div>
+            <div class="max-h-60 overflow-y-auto pr-2">
+                <ul id="playlist" class="space-y-2">
+                    <li class="playlist-item active p-3 rounded flex justify-between items-center">
+                        <div>
+                            <p class="font-medium">Neon Dreams</p>
+                            <p class="text-sm text-gray-300">NK Music</p>
+                        </div>
+                        <span class="text-xs text-gray-400">3:42</span>
+                    </li>
+                    <li class="playlist-item p-3 rounded flex justify-between items-center">
+                        <div>
+                            <p class="font-medium">Electric Pulse</p>
+                            <p class="text-sm text-gray-300">NK Music</p>
+                        </div>
+                        <span class="text-xs text-gray-400">4:15</span>
+                    </li>
+                    <li class="playlist-item p-3 rounded flex justify-between items-center">
+                        <div>
+                            <p class="font-medium">Cosmic Waves</p>
+                            <p class="text-sm text-gray-300">NK Music</p>
+                        </div>
+                        <span class="text-xs text-gray-400">3:28</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Upload Section -->
+        <section class="glass-card p-6 mb-12 neon-border">
+            <h2 class="text-2xl font-bold mb-4 futuristic-font">UPLOAD YOUR SONG</h2>
+            <div id="upload-area" class="upload-area p-8 text-center rounded-lg mb-4 cursor-pointer">
+                <i class="fas fa-cloud-upload-alt text-4xl mb-3" style="color: var(--neon-purple);"></i>
+                <p class="mb-2">Drag & drop your MP3 file here</p>
+                <p class="text-sm text-gray-300 mb-4">or</p>
+                <button id="browse-btn" class="neon-button px-6 py-2 rounded-full">Browse Files</button>
+                <input type="file" id="file-input" accept="audio/*" multiple class="hidden">
+            </div>
+            <div id="upload-status" class="text-center text-sm"></div>
+        </section>
+        
+        <!-- Contact Section -->
+        <section class="glass-card p-6 mb-12 neon-border">
+            <h2 class="text-2xl font-bold mb-4 futuristic-font">CONTACT US</h2>
+            <form id="contact-form" class="space-y-4">
+                <div>
+                    <label for="name" class="block mb-1">Name</label>
+                    <input type="text" id="name" name="name" required class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue">
+                </div>
+                <div>
+                    <label for="email" class="block mb-1">Email</label>
+                    <input type="email" id="email" name="email" required class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue">
+                </div>
+                <div>
+                    <label for="subject" class="block mb-1">Subject</label>
+                    <input type="text" id="subject" name="subject" required class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue">
+                </div>
+                <div>
+                    <label for="message" class="block mb-1">Message</label>
+                    <textarea id="message" name="message" rows="4" required class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue"></textarea>
+                </div>
+                <button type="submit" class="neon-button px-6 py-3 rounded-full w-full">SEND MESSAGE</button>
+            </form>
+            <div id="form-status" class="mt-4 text-center"></div>
+        </section>
+        
+        <!-- Social Media -->
+        <div class="flex justify-center space-x-6 mb-12
+            <a href="https://x.com/NK_Siyol" target="_blank" class="social-icon text-neon-blue text-3xl">
+                <i class="fab fa-x-twitter"></i>
+            </a>
+            <a href="https://instagram.com/nk.siyol" target="_blank" class="social-icon text-neon-pink text-3xl">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://wa.me/9509562376" target="_blank" class="social-icon text-neon-green text-3xl">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+            <a href="https://youtube.com" target="_blank" class="social-icon text-neon-purple text-3xl">
+                <i class="fab fa-youtube"></i>
+            </a>
+        </div>
+
+        <!-- JavaScript for functionality -->
+        <script>
+            // Initialize Particles.js for background
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: '#00f0ff' },
+                    shape: { type: 'circle' },
+                    opacity: { value: 0.5, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: { enable: true, distance: 150, color: '#00f0ff', opacity: 0.4, width: 1 },
+                    move: { enable: true, speed: 2, direction: 'none', random: true }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' } },
+                    modes: { repulse: { distance: 100, duration: 0.4 }, push: { particles_nb: 4 } }
+                },
+                retina_detect: true
+            });
+
+            // Initialize Particles.js for visualizer
+            particlesJS('visualizer-particles', {
+                particles: {
+                    number: { value: 20, density: { enable: true, value_area: 200 } },
+                    color: { value: ['#00f0ff', '#ff00e6', '#00ff9d'] },
+                    shape: { type: 'circle' },
+                    opacity: { value: 0.8, random: true },
+                    size: { value: 6, random: true },
+                    move: { enable: true, speed: 6, direction: 'none', random: true, out_mode: 'out' }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: { onhover: { enable: false }, onclick: { enable: false } }
+                },
+                retina_detect: true
+            });
+
+            // Audio player setup
+            const audio = new Audio();
+            const playlist = document.getElementById('playlist');
+            const fileInput = document.getElementById('file-input');
+            const uploadArea = document.getElementById('upload-area');
+            const browseBtn = document.getElementById('browse-btn');
+            const uploadStatus = document.getElementById('upload-status');
+            const currentSong = document.getElementById('current-song');
+            const currentArtist = document.getElementById('current-artist');
+            const currentTime = document.getElementById('current-time');
+            const totalTime = document.getElementById('total-time');
+            const progressBar = document.getElementById('progress-bar');
+            const playBtn = document.getElementById('play-btn');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const volumeControl = document.getElementById('volume-control');
+            const visualizer = document.querySelector('.visualizer');
+            const waveform = document.querySelector('.waveform');
+            const waveformBars = document.querySelectorAll('.waveform-bar');
+            const visualizerParticles = document.getElementById('visualizer-particles');
+
+            let tracks = [];
+            let currentTrackIndex = -1;
+            let trackURLs = new Set();
+            let audioContext, analyser, dataArray;
+
+            // Format time in mm:ss
+            function formatTime(seconds) {
+                const minutes = Math.floor(seconds / 60);
+                seconds = Math.floor(seconds % 60);
+                return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+            }
+
+            // Setup Web Audio API
+            function setupAudioContext() {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioContext.createAnalyser();
+                    analyser.fftSize = 512;
+                    const source = audioContext.createMediaElementSource(audio);
+                    source.connect(analyser);
+                    analyser.connect(audioContext.destination);
+                    dataArray = new Uint8Array(analyser.frequencyBinCount);
+                }
+            }
+
+            // Update equalizer and animations
+            function updateVisualizer() {
+                if (analyser && !audio.paused) {
+                    analyser.getByteFrequencyData(dataArray);
+                    let bassEnergy = 0;
+                    let beatEnergy = 0;
+
+                    for (let i = 0; i < 10; i++) {
+                        bassEnergy += dataArray[i];
+                    }
+                    bassEnergy /= 10;
+
+                    for (let i = 10; i < 50; i++) {
+                        beatEnergy += dataArray[i];
+                    }
+                    beatEnergy /= 40;
+
+                    waveformBars.forEach((bar, index) => {
+                        const dataIndex = Math.floor(index * (dataArray.length / waveformBars.length));
+                        let height = (dataArray[dataIndex] / 255) * 80;
+                        bar.style.height = `${height}px`;
+                        if (beatEnergy > 100 && index > 4) {
+                            bar.classList.add('beat');
+                            setTimeout(() => bar.classList.remove('beat'), 100);
+                        }
+                    });
+
+                    if (bassEnergy > 120) {
+                        visualizer.classList.add('bass-pulse');
+                        setTimeout(() => visualizer.classList.remove('bass-pulse'), 200);
+                    }
+
+                    requestAnimationFrame(updateVisualizer);
+                }
+            }
+
+            // Handle file upload
+            function handleFiles(files) {
+                console.log('Handling files:', files);
+                if (!files || files.length === 0) {
+                    uploadStatus.textContent = 'No files selected';
+                    uploadStatus.classList.add('text-red-500');
+                    setTimeout(() => {
+                        uploadStatus.textContent = '';
+                        uploadStatus.classList.remove('text-red-500');
+                    }, 3000);
+                    return;
+                }
+
+                for (let file of files) {
+                    console.log('Processing file:', file.name, file.type);
+                    if (file.type.startsWith('audio/') || file.name.endsWith('.mp3')) {
+                        try {
+                            const url = URL.createObjectURL(file);
+                            console.log('Created URL:', url);
+                            trackURLs.add(url);
+                            const track = {
+                                name: file.name.replace(/\.[^/.]+$/, ''),
+                                artist: 'Unknown Artist',
+                                url: url,
+                                duration: '0:00'
+                            };
+
+                            const audioTemp = new Audio(url);
+                            audioTemp.onloadedmetadata = () => {
+                                track.duration = formatTime(audioTemp.duration);
+                                console.log('Metadata loaded:', track);
+                                updatePlaylist();
+                            };
+                            audioTemp.onerror = () => {
+                                console.error('Error loading metadata for:', file.name);
+                                uploadStatus.textContent = `Error loading ${file.name}`;
+                                uploadStatus.classList.add('text-red-500');
+                                setTimeout(() => {
+                                    uploadStatus.textContent = '';
+                                    uploadStatus.classList.remove('text-red-500');
+                                }, 3000);
+                            };
+
+                            tracks.unshift(track);
+                            uploadStatus.textContent = `Uploaded: ${file.name}`;
+                            uploadStatus.classList.add('text-neon-green');
+                            setTimeout(() => {
+                                uploadStatus.textContent = '';
+                                uploadStatus.classList.remove('text-neon-green');
+                            }, 3000);
+                        } catch (error) {
+                            console.error('Error processing file:', file.name, error);
+                            uploadStatus.textContent = `Error uploading ${file.name}`;
+                            uploadStatus.classList.add('text-red-500');
+                            setTimeout(() => {
+                                uploadStatus.textContent = '';
+                                uploadStatus.classList.remove('text-red-500');
+                            }, 3000);
+                        }
+                    } else {
+                        console.log('Invalid file type:', file.name);
+                        uploadStatus.textContent = `Invalid file: ${file.name}. Please upload an audio file.`;
+                        uploadStatus.classList.add('text-red-500');
+                        setTimeout(() => {
+                            uploadStatus.textContent = '';
+                            uploadStatus.classList.remove('text-red-500');
+                        }, 3000);
+                    }
+                }
+                updatePlaylist();
+            }
+
+            // Update playlist UI
+            function updatePlaylist() {
+                console.log('Updating playlist with tracks:', tracks);
+                playlist.innerHTML = '';
+                tracks.forEach((track, index) => {
+                    const li = document.createElement('li');
+                    li.className = `playlist-item p-3 rounded flex justify-between items-center ${index === currentTrackIndex ? 'active' : ''}`;
+                    li.innerHTML = `
+                        <div>
+                            <p class="font-medium">${track.name}</p>
+                            <p class="text-sm text-gray-300">${track.artist}</p>
+                        </div>
+                        <span class="text-xs text-gray-400">${track.duration}</span>
+                    `;
+                    li.addEventListener('click', () => playTrack(index));
+                    playlist.appendChild(li);
+                });
+            }
+
+            // Play a track
+            function playTrack(index) {
+                console.log('Playing track at index:', index);
+                if (index >= 0 && index < tracks.length) {
+                    currentTrackIndex = index;
+                    audio.src = tracks[index].url;
+                    audio.play().catch((error) => {
+                        console.error('Playback error:', error);
+                        uploadStatus.textContent = 'Error playing the track. Please try another file.';
+                        uploadStatus.classList.add('text-red-500');
+                        setTimeout(() => {
+                            uploadStatus.textContent = '';
+                            uploadStatus.classList.remove('text-red-500');
+                        }, 3000);
+                    });
+                    playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                    currentSong.textContent = tracks[index].name;
+                    currentArtist.textContent = tracks[index].artist;
+                    waveform.classList.add('playing');
+                    visualizerParticles.classList.add('playing');
+                    setupAudioContext();
+                    updateVisualizer();
+                    updatePlaylist();
+                }
+            }
+
+            // File input handling
+            browseBtn.addEventListener('click', () => {
+                console.log('Browse button clicked');
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                console.log('File input changed:', e.target.files);
+                handleFiles(e.target.files);
+                e.target.value = ''; // Reset input to allow re-uploading same file
+            });
+
+            // Drag and drop handling
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                console.log('Drag over');
+                uploadArea.classList.add('drag-over');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                console.log('Drag leave');
+                uploadArea.classList.remove('drag-over');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                console.log('Drop event:', e.dataTransfer.files);
+                uploadArea.classList.remove('drag-over');
+                handleFiles(e.dataTransfer.files);
+            });
+
+            // Player controls
+            playBtn.addEventListener('click', () => {
+                console.log('Play button clicked, paused:', audio.paused);
+                if (audio.paused && currentTrackIndex >= 0) {
+                    audio.play().catch((error) => {
+                        console.error('Playback error:', error);
+                        uploadStatus.textContent = 'Error playing the track.';
+                        uploadStatus.classList.add('text-red-500');
+                        setTimeout(() => {
+                            uploadStatus.textContent = '';
+                            uploadStatus.classList.remove('text-red-500');
+                        }, 3000);
+                    });
+                    playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                    waveform.classList.add('playing');
+                    visualizerParticles.classList.add('playing');
+                    setupAudioContext();
+                    updateVisualizer();
+                } else {
+                    audio.pause();
+                    playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                    waveform.classList.remove('playing');
+                    visualizerParticles.classList.remove('playing');
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                console.log('Previous button clicked');
+                if (currentTrackIndex > 0) playTrack(currentTrackIndex - 1);
+            });
+
+            nextBtn.addEventListener('click', () => {
+                console.log('Next button clicked');
+                if (currentTrackIndex < tracks.length - 1) playTrack(currentTrackIndex + 1);
+            });
+
+            // Update progress bar and time
+            audio.addEventListener('timeupdate', () => {
+                if (!isNaN(audio.duration)) {
+                    const progress = (audio.currentTime / audio.duration) * 100;
+                    progressBar.value = progress;
+                    currentTime.textContent = formatTime(audio.currentTime);
+                    totalTime.textContent = formatTime(audio.duration);
+                }
+            });
+
+            // Seek functionality
+            progressBar.addEventListener('input', () => {
+                if (!isNaN(audio.duration)) {
+                    audio.currentTime = (progressBar.value / 100) * audio.duration;
+                }
+            });
+
+            // Volume control
+            volumeControl.addEventListener('input', () => {
+                audio.volume = volumeControl.value / 100;
+            });
+
+            // Auto-play next track
+            audio.addEventListener('ended', () => {
+                waveform.classList.remove('playing');
+                visualizerParticles.classList.remove('playing');
+                if (currentTrackIndex < tracks.length - 1) {
+                    playTrack(currentTrackIndex + 1);
+                } else {
+                    playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                }
+            });
+
+            // Pause handling
+            audio.addEventListener('pause', () => {
+                waveform.classList.remove('playing');
+                visualizerParticles.classList.remove('playing');
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            });
+
+            // Cleanup URLs
+            window.addEventListener('beforeunload', () => {
+                trackURLs.forEach(url => URL.revokeObjectURL(url));
+            });
+
+            // Initialize playlist
+            tracks = [
+                { name: 'Neon Dreams', artist: 'NK Music', url: '', duration: '3:42' },
+                { name: 'Electric Pulse', artist: 'NK Music', url: '', duration: '4:15' },
+                { name: 'Cosmic Waves', artist: 'NK Music', url: '', duration: '3:28' }
+            ];
+            updatePlaylist();
+
+            // Contact form (placeholder)
+            document.getElementById('contact-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                document.getElementById('form-status').textContent = 'Message sent successfully!';
+                document.getElementById('form-status').classList.add('text-neon-green');
+                setTimeout(() => {
+                    document.getElementById('form-status').textContent = '';
+                    document.getElementById('form-status').classList.remove('text-neon-green');
+                }, 3000);
+                e.target.reset();
+            });
+        </script>
+    </div>
+</body>
+</html>
