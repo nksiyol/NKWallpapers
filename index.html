@@ -135,15 +135,15 @@
         }
         
         .waveform-bar {
-            width: 4px;
-            height: 10px;
-            background: var(--neon-blue);
-            margin: 0 2px;
-            border-radius: 10px;
-            animation: equalize 1.2s infinite ease-in-out;
-            animation-delay: calc(var(--i) * 0.1s);
-            box-shadow: 0 0 10px var(--neon-blue), 0 0 15px var(--neon-pink);
-            transition: height 0.1s ease, background 0.2s ease;
+    width: 4px;
+    height: 10px;
+    background: linear-gradient(to top, var(--neon-pink), var(--neon-blue));
+    margin: 0 2px;
+    border-radius: 10px;
+    animation: equalize 1.2s infinite ease-in-out;
+    animation-delay: calc(var(--i) * 0.1s);
+    box-shadow: 0 0 10px var(--neon-blue), 0 0 15px var(--neon-pink);
+    transition: height 0.15s ease-in-out;
         }
         
         .waveform-bar.beat {
