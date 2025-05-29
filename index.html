@@ -143,10 +143,10 @@
     background: linear-gradient(to top, var(--neon-pink), var(--neon-blue));
     margin: 0 2px;
     border-radius: 10px;
-    animation: equalize 1.2s infinite ease-in-out;
-    animation-delay: calc(var(--i) * 0.1s);
+    animation: equalize 0.8s infinite ease-in-out; /* faster animation */
+    animation-delay: calc(var(--i) * 0.07s); /* tighter sync */
     box-shadow: 0 0 10px var(--neon-blue), 0 0 15px var(--neon-pink);
-    transition: height 0.15s ease-in-out;
+    transition: height 0.1s linear; /* fast + smooth */
         }
         
         .waveform-bar.beat {
