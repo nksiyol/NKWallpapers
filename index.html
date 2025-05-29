@@ -1,1 +1,351 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NK Music Player</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Montserrat:wght@300;400;600&display=swap');
+        
+        :root {
+            --neon-blue: #00f0ff;
+            --neon-purple: #b400ff;
+            --neon-pink: #ff00e6;
+            --neon-green: #00ff9d;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #0a0a15;
+            color: white;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .futuristic-font {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+        }
+        
+        .neon-text {
+            text-shadow: 0 0 10px var(--neon-blue), 
+                         0 0 20px var(--neon-purple), 
+                         0 0 30px var(--neon-pink);
+            animation: flicker 3s infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+                text-shadow: 0 0 10px var(--neon-blue), 
+                             0 0 20px var(--neon-purple), 
+                             0 0 30px var(--neon-pink);
+            }
+            20%, 24%, 55% {
+                text-shadow: none;
+            }
+        }
+        
+        .neon-border {
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 10px var(--neon-blue), 
+                        inset 0 0 10px var(--neon-blue);
+        }
+        
+        .neon-button {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--neon-blue);
+            color: white;
+            transition: all 0.3s;
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+        
+        .neon-button:hover {
+            background: var(--neon-blue);
+            color: black;
+            box-shadow: 0 0 20px var(--neon-blue), 
+                       0 0 40px var(--neon-blue);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .visualizer {
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .visualizer::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(
+                var(--neon-blue) 0% 10%,
+                var(--neon-purple) 10% 30%,
+                var(--neon-pink) 30% 50%,
+                var(--neon-green) 50% 70%,
+                var(--neon-blue) 70% 100%
+            );
+            animation: rotate 10s linear infinite;
+            opacity: 0.3;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .waveform {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .waveform-bar {
+            width: 4px;
+            height: 10px;
+            background: var(--neon-blue);
+            margin: 0 2px;
+            border-radius: 10px;
+            animation: equalize 1.5s infinite ease-in-out;
+            animation-delay: calc(var(--i) * 0.05s);
+        }
+        
+        @keyframes equalize {
+            0%, 100% { height: 10px; }
+            50% { height: 50px; }
+        }
+        
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        
+        .upload-area {
+            border: 2px dashed var(--neon-purple);
+            transition: all 0.3s;
+        }
+        
+        .upload-area:hover {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 20px var(--neon-purple);
+        }
+        
+        .upload-area.drag-over {
+            background: rgba(180, 0, 255, 0.1);
+            border-color: var(--neon-green);
+        }
+        
+        .social-icon {
+            transition: all 0.3s;
+            filter: drop-shadow(0 0 5px currentColor);
+        }
+        
+        .social-icon:hover {
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 15px currentColor);
+        }
+        
+        .playlist-item:hover {
+            background: rgba(0, 240, 255, 0.1);
+            cursor: pointer;
+        }
+        
+        .playlist-item.active {
+            background: rgba(0, 240, 255, 0.2);
+            border-left: 3px solid var(--neon-blue);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .visualizer {
+                width: 200px;
+                height: 200px;
+            }
+            
+            .waveform-bar {
+                width: 3px;
+                margin: 0 1px;
+            }
+        }
+    </style>
+</head>
+<body class="relative">
+    <!-- Particles Background -->
+    <div id="particles-js"></div>
+    
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-4xl md:text-6xl font-bold mb-4 neon-text futuristic-font">
+                NK MUSIC PLAYER
+            </h1>
+            <p class="text-lg text-gray-300">Immerse yourself in the future of sound</p>
+        </header>
+        
+        <!-- Main Player Section -->
+        <section class="glass-card p-6 mb-12 neon-border">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                <!-- Visualizer -->
+                <div class="visualizer mb-8 md:mb-0">
+                    <div class="waveform">
+                        <!-- These bars will be animated by JavaScript based on audio -->
+                        <div class="waveform-bar" style="--i:0"></div>
+                        <div class="waveform-bar" style="--i:1"></div>
+                        <div class="waveform-bar" style="--i:2"></div>
+                        <div class="waveform-bar" style="--i:3"></div>
+                        <div class="waveform-bar" style="--i:4"></div>
+                        <div class="waveform-bar" style="--i:5"></div>
+                        <div class="waveform-bar" style="--i:6"></div>
+                        <div class="waveform-bar" style="--i:7"></div>
+                        <div class="waveform-bar" style="--i:8"></div>
+                        <div class="waveform-bar" style="--i:9"></div>
+                        <div class="waveform-bar" style="--i:10"></div>
+                        <div class="waveform-bar" style="--i:11"></div>
+                    </div>
+                </div>
+                
+                <!-- Player Controls -->
+                <div class="flex-1 w-full">
+                    <div class="text-center mb-6">
+                        <h2 id="current-song" class="text-2xl font-bold mb-1">No song selected</h2>
+                        <p id="current-artist" class="text-gray-300">-</p>
+                    </div>
+                    
+                    <div class="flex justify-center items-center mb-6">
+                        <button id="prev-btn" class="neon-button p-3 rounded-full mx-2">
+                            <i class="fas fa-step-backward"></i>
+                        </button>
+                        <button id="play-btn" class="neon-button p-4 rounded-full mx-3 text-xl">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button id="next-btn" class="neon-button p-3 rounded-full mx-2">
+                            <i class="fas fa-step-forward"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span id="current-time">0:00</span>
+                            <span id="total-time">0:00</span>
+                        </div>
+                        <input type="range" id="progress-bar" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="0">
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <i class="fas fa-volume-up mr-2 text-neon-blue"></i>
+                        <input type="range" id="volume-control" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer" min="0" max="100" value="70">
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Playlist Section -->
+        <section class="glass-card p-6 mb-12 neon-border">
+            <h2 class="text-2xl font-bold mb-4 futuristic-font">PLAYLIST</h2>
+            <div class="max-h-60 overflow-y-auto pr-2">
+                <ul id="playlist" class="space-y-2">
+                    <!-- Playlist items will be added here by JavaScript -->
+                    <li class="playlist-item active p-3 rounded flex justify-between items-center">
+                        <div>
+                            <p class="font-medium">Neon Dreams</p>
+                            <p class="text-sm text-gray-300">NK Music</p>
+                        </div>
+                        <span class="text-xs text-gray-400">3:42</span>
+                    </li>
+                    <li class="playlist-item p-3 rounded flex justify-between items-center">
+                        <div>
+                            <p class="font-medium">Electric Pulse</p>
+                            <p class="text-sm text-gray-300">NK Music</p>
+                        </div>
+                        <span class="text-xs text-gray-400">4:15</span>
+                    </li>
+                    <li class="playlist-item p-3 rounded flex justify-between items-center">
+                        <div>
+                            <p class="font-medium">Cosmic Waves</p>
+                            <p class="text-sm text-gray-300">NK Music</p>
+                        </div>
+                        <span class="text-xs text-gray-400">3:28</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- Upload Section -->
+        <section class="glass-card p-6 mb-12 neon-border">
+            <h2 class="text-2xl font-bold mb-4 futuristic-font">UPLOAD YOUR SONG</h2>
+            <div id="upload-area" class="upload-area p-8 text-center rounded-lg mb-4 cursor-pointer">
+                <i class="fas fa-cloud-upload-alt text-4xl mb-3" style="color: var(--neon-purple);"></i>
+                <p class="mb-2">Drag & drop your MP3 file here</p>
+                <p class="text-sm text-gray-300 mb-4">or</p>
+                <button id="browse-btn" class="neon-button px-6 py-2 rounded-full">Browse Files</button>
+                <input type="file" id="file-input" accept=".mp3,audio/*" class="hidden">
+            </div>
+            <div id="upload-status" class="text-center text-sm"></div>
+        </section>
+        
+        <!-- Contact Section -->
+        <section class="glass-card p-6 mb-12 neon-border">
+            <h2 class="text-2xl font-bold mb-4 futuristic-font">CONTACT US</h2>
+            <form id="contact-form" class="space-y-4">
+                <div>
+                    <label for="name" class="block mb-1">Name</label>
+                    <input type="text" id="name" name="name" required class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue">
+                </div>
+                <div>
+                    <label for="email" class="block mb-1">Email</label>
+                    <input type="email" id="email" name="email" required class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue">
+                </div>
+                <div>
+                    <label for="subject" class="block mb-1">Subject</label>
+                    <input type="text" id="subject" name="subject" required class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue">
+                </div>
+                <div>
+                    <label for="message" class="block mb-1">Message</label>
+                    <textarea id="message" name="message" rows="4" required class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue"></textarea>
+                </div>
+                <button type="submit" class="neon-button px-6 py-3 rounded-full w-full font-bold">SEND MESSAGE</button>
+            </form>
+            <div id="form-status" class="mt-4 text-center"></div>
+        </section>
+        
+        <!-- Social Media -->
+        <div class="flex justify-center space-x-6 mb-12">
+            <a href="https://instagram.com" target="_blank" class="social-icon text-neon-pink text-3xl">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://wa.me/" target="_blank" class="social-icon text-neon-green text-3xl">
+                <i class="fab fa-whatsapp"></i>
+            </a>
+            <a href="https://twitter.com" target="_blank" class="social-icon text-neon-blue text-3xl">
+                <i class="fab fa-twitter"></i>
+            </a>
+            <a href="https://youtube.com" target="_blank" class="social-icon text-neon-purple text-3xl">
+                <i class="fab fa-youtube"></i>
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        //
+</html>
