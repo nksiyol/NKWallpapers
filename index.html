@@ -294,7 +294,14 @@
                         <h2 id="current-song" class="text-2xl font-bold mb-1">No song selected</h2>
                         <p id="current-artist" class="text-gray-300">-</p>
                     </div>
-                    
+                    #current-song {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  display: inline-block;
+}
+                   
                     <div class="flex justify-center items-center mb-6">
                         <button id="play-btn" class="neon-button p-4 rounded-full mx-3 text-xl">
                             <i class="fas fa-play"></i>
