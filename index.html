@@ -588,7 +588,28 @@
             const waveformBars = document.querySelectorAll('.waveform-bar');
             const visualizerParticles = document.getElementById('visualizer-particles');
 
-            let tracks = [];
+            let 
+tracks = [
+  {
+    name: 'Neon Dreams',
+    artist: 'NK Music',
+    url: 'https://raw.githubusercontent.com/nksiyol/NKWallpapers/main/So%20high.mp3',
+    duration: '3:42'
+  },
+  {
+    name: 'Electric Pulse',
+    artist: 'NK Music',
+    url: 'https://raw.githubusercontent.com/nksiyol/NKWallpapers/main/Im%20rider.mp3',
+    duration: '4:15'
+  },
+  {
+    name: 'Cosmic Waves',
+    artist: 'NK Music',
+    url: 'https://raw.githubusercontent.com/nksiyol/NKWallpapers/main/Cosmic%20Waves.mp3',
+    duration: '3:28'
+  }
+];
+
             let currentTrackIndex = -1;
             let trackURLs = new Set();
             let audioContext, analyser, dataArray;
@@ -879,11 +900,28 @@
             });
 
             // Initialize playlist
-            tracks = [
-                { name: 'Neon Dreams', artist: 'NK Music', url: '', duration: '3:42' },
-                { name: 'Electric Pulse', artist: 'NK Music', url: '', duration: '4:15' },
-                { name: 'Cosmic Waves', artist: 'NK Music', url: '', duration: '3:28' }
-            ];
+            
+tracks = [
+  {
+    name: 'Neon Dreams',
+    artist: 'NK Music',
+    url: 'https://raw.githubusercontent.com/nksiyol/NKWallpapers/main/So%20high.mp3',
+    duration: '3:42'
+  },
+  {
+    name: 'Electric Pulse',
+    artist: 'NK Music',
+    url: 'https://raw.githubusercontent.com/nksiyol/NKWallpapers/main/Im%20rider.mp3',
+    duration: '4:15'
+  },
+  {
+    name: 'Cosmic Waves',
+    artist: 'NK Music',
+    url: 'https://raw.githubusercontent.com/nksiyol/NKWallpapers/main/Cosmic%20Waves.mp3',
+    duration: '3:28'
+  }
+];
+
             updatePlaylist();
 
             // Contact form (placeholder)
