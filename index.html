@@ -77,46 +77,46 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
-        .visualizer {
-            width: 300px;
-            height: 300px;
-            border-radius: 50%;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.25s ease-in-out;
-            min-width: 200px;
-            min-height: 200px;
-            flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: radial-gradient(circle, rgba(0,240,255,0.1), transparent);
-        }
+       .visualizer {
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s ease-in-out;
+  min-width: 200px;
+  min-height: 200px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgba(0,240,255,0.1), transparent);
+}
 
-        .visualizer.bass-pulse {
-            transform: scale(1.15);
-            box-shadow: 0 0 40px var(--neon-purple), 0 0 80px var(--neon-blue);
-        }
-
+.visualizer.bass-pulse {
+  transform: scale(1.15); /* Zoom in on bass hit */
+  box-shadow: 0 0 40px var(--neon-purple), 0 0 80px var(--neon-blue);
+}
         .visualizer::after {
-            content: '';
-            position: absolute;
-            width: 80%;
-            height: 80%;
-            border-radius: 50%;
-            background: radial-gradient(circle, var(--neon-pink), transparent);
-            opacity: 0.05;
-            z-index: 0;
-            pointer-events: none;
-        }
+  content: '';
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--neon-pink), transparent);
+  opacity: 0.05;
+  z-index: 0;
+  pointer-events: none;
+}
         
-        #current-song {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 250px;
-            display: inline-block;
-        }
+#current-song {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 250px;
+  display: inline-block;
+}
+
         
         .visualizer::before {
             content: '';
@@ -162,16 +162,17 @@
         }
         
         .waveform-bar {
-            width: 4px;
-            height: 10px;
-            background: linear-gradient(to top, var(--neon-pink), var(--neon-blue));
-            margin: 0 2px;
-            border-radius: 10px;
-            animation: equalize 0.8s infinite ease-in-out;
-            animation-delay: calc(var(--i) * 0.07s);
-            box-shadow: 0 0 10px var(--neon-blue), 0 0 15px var(--neon-pink);
-            transition: height 0.1s linear;
+    width: 4px;
+    height: 10px;
+    background: linear-gradient(to top, var(--neon-pink), var(--neon-blue));
+    margin: 0 2px;
+    border-radius: 10px;
+    animation: equalize 0.8s infinite ease-in-out; /* faster animation */
+    animation-delay: calc(var(--i) * 0.07s); /* tighter sync */
+    box-shadow: 0 0 10px var(--neon-blue), 0 0 15px var(--neon-pink);
+    transition: height 0.1s linear; /* fast + smooth */
         }
+       
         
         .waveform-bar.beat {
             background: var(--neon-pink);
@@ -256,6 +257,7 @@
             .music-icon {
                 font-size: 60px;
             }
+         
         }
     </style>
 </head>
@@ -302,6 +304,7 @@
                         <p id="current-artist" class="text-gray-300">-</p>
                     </div>
                     
+                   
                     <div class="flex justify-center items-center mb-6">
                         <button id="play-btn" class="neon-button p-4 rounded-full mx-3 text-xl">
                             <i class="fas fa-play"></i>
@@ -325,22 +328,108 @@
         </section>
         
         <!-- Playlist Section -->
-        <section class="glass-card p-6 mb-12 neon-border">
-            <h2 class="text-2xl font-bold mb-4 futuristic-font">PLAYLIST</h2>
+<section class="glass-card p-6 mb-12 neon-border">
+  <h2 class="text-2xl font-bold mb-4 futuristic-font">PLAYLIST</h2>
 
-            <div class="flex justify-between mb-4">
-                <button id="prev-btn" class="neon-button p-2 rounded-full">
-                    <i class="fas fa-step-backward"></i>
-                </button>
-                <button id="next-btn" class="neon-button p-2 rounded-full">
-                    <i class="fas fa-step-forward"></i>
-                </button>
-            </div>
+  <!-- Upload Button -->
+  <div class="mb-4">
+    <input type="file" id="upload-input" accept=".mp3" class="text-sm text-white bg-gray-800 rounded p-2" />
+  </div>
 
-            <div class="max-h-60 overflow-y-auto pr-2">
-                <ul id="playlist" class="space-y-2"></ul>
-            </div>
-        </section>
+  <div class="flex justify-between mb-4">
+    <button id="prev-btn" class="neon-button p-2 rounded-full">
+      <i class="fas fa-step-backward"></i>
+    </button>
+    <button id="next-btn" class="neon-button p-2 rounded-full">
+      <i class="fas fa-step-forward"></i>
+    </button>
+  </div>
+
+  <div class="max-h-60 overflow-y-auto pr-2">
+    <ul id="playlist" class="space-y-2"></ul>
+  </div>
+</section>
+        <script>
+  const audio = new Audio();
+  const playlistContainer = document.getElementById("playlist");
+  const uploadInput = document.getElementById("upload-input");
+  let currentTrackIndex = 0;
+
+  let playlist = [
+    {
+      name: "So highs",
+      artist: "So high",
+      duration: "4:12",
+      file: "So high.mp3"
+    },
+    {
+      name: "rider",
+      artist: "NK Music",
+      duration: "2:46",
+      file: "Im rider.mp3"
+    },
+    {
+      name: "Cosmic Waves",
+      artist: "NK Music",
+      duration: "2:46",
+      file: "songs/cosmic-waves.mp3"
+    }
+  ];
+
+  function loadPlaylist() {
+    playlistContainer.innerHTML = "";
+    playlist.forEach((track, index) => {
+      const li = document.createElement("li");
+      li.className = "playlist-item p-3 rounded flex justify-between items-center hover:bg-gray-800 cursor-pointer";
+      li.innerHTML = `
+        <div>
+          <p class="font-medium">${track.name}</p>
+          <p class="text-sm text-gray-300">${track.artist}</p>
+        </div>
+        <span class="text-xs text-gray-400">${track.duration || ""}</span>
+      `;
+      li.addEventListener("click", () => {
+        playTrack(index);
+      });
+      playlistContainer.appendChild(li);
+    });
+  }
+
+  function playTrack(index) {
+    const track = playlist[index];
+    if (!track) return;
+    currentTrackIndex = index;
+    audio.src = track.file;
+    audio.play();
+    document.getElementById("current-song").textContent = track.name;
+    document.getElementById("current-song").title = track.name;
+    setupAudioContext(); // call your existing visualizer setup
+    updateVisualizer();  // if you have a visualizer
+  }
+
+  // Upload MP3
+  uploadInput.addEventListener("change", (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    const name = file.name.replace(".mp3", "");
+
+    // Add to top of playlist
+    playlist.unshift({
+      name: name,
+      artist: "Uploaded by User",
+      duration: "", // optional: calculate duration
+      file: url
+    });
+
+    loadPlaylist();
+    playTrack(0); // Auto play uploaded song
+  });
+
+  // Load initially
+  loadPlaylist();
+</script>
         
         <!-- Upload Section -->
         <section class="glass-card p-6 mb-12 neon-border">
@@ -355,62 +444,70 @@
             <div id="upload-status" class="text-center text-sm"></div>
         </section>
         
-        <!-- Contact Section -->
-        <section class="glass-card p-6 mb-12 neon-border">
-            <h2 class="text-2xl font-bold mb-4 futuristic-font">CONTACT US</h2>
-            <form id="contact-form" class="space-y-4">
-                <div>
-                    <label for="name" class="block mb-1">Name</label>
-                    <input type="text" id="name" name="name" required
-                        class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue">
-                </div>
-                <div>
-                    <label for="email" class="block mb-1">Email</label>
-                    <input type="email" id="email" name="email" required
-                        class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue">
-                </div>
-                <div>
-                    <label for="subject" class="block mb-1">Subject</label>
-                    <input type="text" id="subject" name="subject" required
-                        class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue">
-                </div>
-                <div>
-                    <label for="message" class="block mb-1">Message</label>
-                    <textarea id="message" name="message" rows="4" required
-                        class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue"></textarea>
-                </div>
-                <button type="submit" class="neon-button px-6 py-3 rounded-full w-full">SEND MESSAGE</button>
-            </form>
-            <div id="form-status" class="mt-4 text-center text-sm"></div>
-        </section>
+       <!-- Contact Section -->
+<section class="glass-card p-6 mb-12 neon-border">
+  <h2 class="text-2xl font-bold mb-4 futuristic-font">CONTACT US</h2>
 
-        <!-- EmailJS Script -->
-        <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
-        <script>
-            emailjs.init("B_DXStIfwPBgIKcQd");
-            const form = document.getElementById("contact-form");
-            const status = document.getElementById("form-status");
+  <!-- Contact Form -->
+  <form id="contact-form" class="space-y-4">
+    <div>
+      <label for="name" class="block mb-1">Name</label>
+      <input type="text" id="name" name="name" required
+        class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue">
+    </div>
+    <div>
+      <label for="email" class="block mb-1">Email</label>
+      <input type="email" id="email" name="email" required
+        class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue">
+    </div>
+    <div>
+      <label for="subject" class="block mb-1">Subject</label>
+      <input type="text" id="subject" name="subject" required
+        class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue">
+    </div>
+    <div>
+      <label for="message" class="block mb-1">Message</label>
+      <textarea id="message" name="message" rows="4" required
+        class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue"></textarea>
+    </div>
+    <button type="submit" class="neon-button px-6 py-3 rounded-full w-full">SEND MESSAGE</button>
+  </form>
 
-            form.addEventListener("submit", function (e) {
-                e.preventDefault();
-                status.textContent = "⏳ Sending...";
-                status.style.color = "#0ff";
-                emailjs.sendForm("service_arcyczl", "template_n6nsraa", this)
-                    .then(() => {
-                        status.textContent = "✅ Message sent successfully!";
-                        status.style.color = "#00ff88";
-                        form.reset();
-                    })
-                    .catch((err) => {
-                        status.textContent = "❌ Failed to send. Try again.";
-                        status.style.color = "#ff0055";
-                        console.error("EmailJS Error:", err);
-                    });
-            });
-        </script>
+  <!-- Status message -->
+  <div id="form-status" class="mt-4 text-center text-sm"></div>
+</section>
+
+<!-- EmailJS Script -->
+<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+<script>
+  // ✅ Replace this with your real public key
+  emailjs.init("B_DXStIfwPBgIKcQd"); // <-- 👈 Replace this with your EmailJS public key
+
+  const form = document.getElementById("contact-form");
+  const status = document.getElementById("form-status");
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    status.textContent = "⏳ Sending...";
+    status.style.color = "#0ff";
+
+    emailjs.sendForm("service_arcyczl", "template_n6nsraa", this)
+      .then(() => {
+        status.textContent = "✅ Message sent successfully!";
+        status.style.color = "#00ff88";
+        form.reset();
+      })
+      .catch((err) => {
+        status.textContent = "❌ Failed to send. Try again.";
+        status.style.color = "#ff0055";
+        console.error("EmailJS Error:", err);
+      });
+  });
+</script>
         
         <!-- Social Media -->
-        <div class="flex justify-center space-x-6 mb-12">
+        <div class="flex justify-center space-x-6 mb-12
             <a href="https://x.com/NK_Siyol" target="_blank" class="social-icon text-neon-blue text-3xl">
                 <i class="fab fa-x-twitter"></i>
             </a>
@@ -536,10 +633,10 @@
                         }
                     });
 
-                    if (bassEnergy > 70) {
-                        visualizer.classList.add('bass-pulse');
-                        setTimeout(() => visualizer.classList.remove('bass-pulse'), 140);
-                    }
+                   if (bassEnergy > 70) { // more sensitive to lower bass
+    visualizer.classList.add('bass-pulse');
+    setTimeout(() => visualizer.classList.remove('bass-pulse'), 140);
+                   }
 
                     requestAnimationFrame(updateVisualizer);
                 }
@@ -547,6 +644,7 @@
 
             // Handle file upload
             function handleFiles(files) {
+                console.log('Handling files:', files);
                 if (!files || files.length === 0) {
                     uploadStatus.textContent = 'No files selected';
                     uploadStatus.classList.add('text-red-500');
@@ -558,13 +656,15 @@
                 }
 
                 for (let file of files) {
+                    console.log('Processing file:', file.name, file.type);
                     if (file.type.startsWith('audio/') || file.name.endsWith('.mp3')) {
                         try {
                             const url = URL.createObjectURL(file);
+                            console.log('Created URL:', url);
                             trackURLs.add(url);
                             const track = {
                                 name: file.name.replace(/\.[^/.]+$/, ''),
-                                artist: 'Uploaded by User',
+                                artist: 'Unknown Artist',
                                 url: url,
                                 duration: '0:00'
                             };
@@ -572,11 +672,8 @@
                             const audioTemp = new Audio(url);
                             audioTemp.onloadedmetadata = () => {
                                 track.duration = formatTime(audioTemp.duration);
+                                console.log('Metadata loaded:', track);
                                 updatePlaylist();
-                                // Auto-play the first uploaded track
-                                if (tracks.length === 1 && currentTrackIndex === -1) {
-                                    playTrack(0);
-                                }
                             };
                             audioTemp.onerror = () => {
                                 console.error('Error loading metadata for:', file.name);
@@ -605,6 +702,7 @@
                             }, 3000);
                         }
                     } else {
+                        console.log('Invalid file type:', file.name);
                         uploadStatus.textContent = `Invalid file: ${file.name}. Please upload an audio file.`;
                         uploadStatus.classList.add('text-red-500');
                         setTimeout(() => {
@@ -618,6 +716,7 @@
 
             // Update playlist UI
             function updatePlaylist() {
+                console.log('Updating playlist with tracks:', tracks);
                 playlist.innerHTML = '';
                 tracks.forEach((track, index) => {
                     const li = document.createElement('li');
@@ -636,6 +735,7 @@
 
             // Play a track
             function playTrack(index) {
+                console.log('Playing track at index:', index);
                 if (index >= 0 && index < tracks.length) {
                     currentTrackIndex = index;
                     audio.src = tracks[index].url;
@@ -650,7 +750,6 @@
                     });
                     playBtn.innerHTML = '<i class="fas fa-pause"></i>';
                     currentSong.textContent = tracks[index].name;
-                    currentSong.title = tracks[index].name;
                     currentArtist.textContent = tracks[index].artist;
                     waveform.classList.add('playing');
                     visualizerParticles.classList.add('playing');
@@ -662,10 +761,12 @@
 
             // File input handling
             browseBtn.addEventListener('click', () => {
+                console.log('Browse button clicked');
                 fileInput.click();
             });
 
             fileInput.addEventListener('change', (e) => {
+                console.log('File input changed:', e.target.files);
                 handleFiles(e.target.files);
                 e.target.value = ''; // Reset input to allow re-uploading same file
             });
@@ -673,21 +774,25 @@
             // Drag and drop handling
             uploadArea.addEventListener('dragover', (e) => {
                 e.preventDefault();
+                console.log('Drag over');
                 uploadArea.classList.add('drag-over');
             });
 
             uploadArea.addEventListener('dragleave', () => {
+                console.log('Drag leave');
                 uploadArea.classList.remove('drag-over');
             });
 
             uploadArea.addEventListener('drop', (e) => {
                 e.preventDefault();
+                console.log('Drop event:', e.dataTransfer.files);
                 uploadArea.classList.remove('drag-over');
                 handleFiles(e.dataTransfer.files);
             });
 
             // Player controls
             playBtn.addEventListener('click', () => {
+                console.log('Play button clicked, paused:', audio.paused);
                 if (audio.paused && currentTrackIndex >= 0) {
                     audio.play().catch((error) => {
                         console.error('Playback error:', error);
@@ -712,10 +817,12 @@
             });
 
             prevBtn.addEventListener('click', () => {
+                console.log('Previous button clicked');
                 if (currentTrackIndex > 0) playTrack(currentTrackIndex - 1);
             });
 
             nextBtn.addEventListener('click', () => {
+                console.log('Next button clicked');
                 if (currentTrackIndex < tracks.length - 1) playTrack(currentTrackIndex + 1);
             });
 
@@ -764,8 +871,25 @@
                 trackURLs.forEach(url => URL.revokeObjectURL(url));
             });
 
-            // Initialize playlist (empty initially, populated by uploads)
+            // Initialize playlist
+            tracks = [
+                { name: 'Neon Dreams', artist: 'NK Music', url: '', duration: '3:42' },
+                { name: 'Electric Pulse', artist: 'NK Music', url: '', duration: '4:15' },
+                { name: 'Cosmic Waves', artist: 'NK Music', url: '', duration: '3:28' }
+            ];
             updatePlaylist();
+
+            // Contact form (placeholder)
+            document.getElementById('contact-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                document.getElementById('form-status').textContent = 'Message sent successfully!';
+                document.getElementById('form-status').classList.add('text-neon-green');
+                setTimeout(() => {
+                    document.getElementById('form-status').textContent = '';
+                    document.getElementById('form-status').classList.remove('text-neon-green');
+                }, 3000);
+                e.target.reset();
+            });
         </script>
     </div>
 </body>
