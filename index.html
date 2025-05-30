@@ -524,13 +524,13 @@
                         const dataIndex = Math.floor(index * (dataArray.length / waveformBars.length));
                         let height = (dataArray[dataIndex] / 255) * 80;
                         bar.style.height = `${height}px`;
-                        if (beatEnergy > 100 && index > 4) {
+                        if (beatEnergy > 80 && index > 4) {
                             bar.classList.add('beat');
                             setTimeout(() => bar.classList.remove('beat'), 100);
                         }
                     });
 
-                   if (bassEnergy > 90) { // more sensitive to lower bass
+                   if (bassEnergy > 50) { // more sensitive to lower bass
     visualizer.classList.add('bass-pulse');
     setTimeout(() => visualizer.classList.remove('bass-pulse'), 200);
                    }
