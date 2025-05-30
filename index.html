@@ -326,88 +326,44 @@
                 </div>
             </div>
         </section>
-        <script>
-  const audio = new Audio();
-  const playlistContainer = document.getElementById("playlist");
-  const uploadInput = document.getElementById("upload-input");
-  let currentTrackIndex = 0;
-
-  let playlist = [
-    {
-      name: "Neon Dreams",
-      artist: "NK Music",
-      duration: "3:42",
-      file: "songs/neon-dreams.mp3"
-    },
-    {
-      name: "Electric Pulse",
-      artist: "NK Music",
-      duration: "4:15",
-      file: "songs/electric-pulse.mp3"
-    },
-    {
-      name: "Cosmic Waves",
-      artist: "NK Music",
-      duration: "3:28",
-      file: "songs/cosmic-waves.mp3"
-    }
-  ];
-
-  function loadPlaylist() {
-    playlistContainer.innerHTML = "";
-    playlist.forEach((track, index) => {
-      const li = document.createElement("li");
-      li.className = "playlist-item p-3 rounded flex justify-between items-center hover:bg-gray-800 cursor-pointer";
-      li.innerHTML = `
-        <div>
-          <p class="font-medium">${track.name}</p>
-          <p class="text-sm text-gray-300">${track.artist}</p>
-        </div>
-        <span class="text-xs text-gray-400">${track.duration || ""}</span>
-      `;
-      li.addEventListener("click", () => {
-        playTrack(index);
-      });
-      playlistContainer.appendChild(li);
-    });
-  }
-
-  function playTrack(index) {
-    const track = playlist[index];
-    if (!track) return;
-    currentTrackIndex = index;
-    audio.src = track.file;
-    audio.play();
-    document.getElementById("current-song").textContent = track.name;
-    document.getElementById("current-song").title = track.name;
-    setupAudioContext(); // call your existing visualizer setup
-    updateVisualizer();  // if you have a visualizer
-  }
-
-  // Upload MP3
-  uploadInput.addEventListener("change", (event) => {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const url = URL.createObjectURL(file);
-    const name = file.name.replace(".mp3", "");
-
-    // Add to top of playlist
-    playlist.unshift({
-      name: name,
-      artist: "Uploaded by User",
-      duration: "", // optional: calculate duration
-      file: url
-    });
-
-    loadPlaylist();
-    playTrack(0); // Auto play uploaded song
-  });
-
-  // Load initially
-  loadPlaylist();
-        </script>
-       
+        
+        <!-- Playlist Section -->
+        <section class="glass-card p-6 mb-12 neon-border">
+            <h2 class="text-2xl font-bold mb-4 futuristic-font">PLAYLIST</h2>
+            <div class="flex justify-between mb-4">
+                <button id="prev-btn" class="neon-button p-2 rounded-full">
+                    <i class="fas fa-step-backward"></i>
+                </button>
+                <button id="next-btn" class="neon-button p-2 rounded-full">
+                    <i class="fas fa-step-forward"></i>
+                </button>
+            </div>
+            <div class="max-h-60 overflow-y-auto pr-2">
+                <ul id="playlist" class="space-y-2">
+                    <li class="playlist-item active p-3 rounded flex justify-between items-center">
+                        <div>
+                            <p class="font-medium">Neon Dreams</p>
+                            <p class="text-sm text-gray-300">NK Music</p>
+                        </div>
+                        <span class="text-xs text-gray-400">3:42</span>
+                    </li>
+                    <li class="playlist-item p-3 rounded flex justify-between items-center">
+                        <div>
+                            <p class="font-medium">Electric Pulse</p>
+                            <p class="text-sm text-gray-300">NK Music</p>
+                        </div>
+                        <span class="text-xs text-gray-400">4:15</span>
+                    </li>
+                    <li class="playlist-item p-3 rounded flex justify-between items-center">
+                        <div>
+                            <p class="font-medium">Cosmic Waves</p>
+                            <p class="text-sm text-gray-300">NK Music</p>
+                        </div>
+                        <span class="text-xs text-gray-400">3:28</span>
+                    </li>
+                </ul>
+            </div>
+        </section>
         
         <!-- Upload Section -->
         <section class="glass-card p-6 mb-12 neon-border">
