@@ -107,8 +107,15 @@
   opacity: 0.05;
   z-index: 0;
   pointer-events: none;
-        }
-
+}
+        
+#current-song {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  display: inline-block;
+}
 
         
         .visualizer::before {
@@ -250,13 +257,7 @@
             .music-icon {
                 font-size: 60px;
             }
-            #current-song {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
-  display: inline-block;
-}
+         
         }
     </style>
 </head>
