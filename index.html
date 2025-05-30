@@ -378,30 +378,67 @@
             <div id="upload-status" class="text-center text-sm"></div>
         </section>
         
-        <!-- Contact Section -->
-        <section class="glass-card p-6 mb-12 neon-border">
-            <h2 class="text-2xl font-bold mb-4 futuristic-font">CONTACT US</h2>
-            <form id="contact-form" class="space-y-4">
-                <div>
-                    <label for="name" class="block mb-1">Name</label>
-                    <input type="text" id="name" name="name" required class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue">
-                </div>
-                <div>
-                    <label for="email" class="block mb-1">Email</label>
-                    <input type="email" id="email" name="email" required class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue">
-                </div>
-                <div>
-                    <label for="subject" class="block mb-1">Subject</label>
-                    <input type="text" id="subject" name="subject" required class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue">
-                </div>
-                <div>
-                    <label for="message" class="block mb-1">Message</label>
-                    <textarea id="message" name="message" rows="4" required class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue"></textarea>
-                </div>
-                <button type="submit" class="neon-button px-6 py-3 rounded-full w-full">SEND MESSAGE</button>
-            </form>
-            <div id="form-status" class="mt-4 text-center"></div>
-        </section>
+       <!-- Contact Section -->
+<section class="glass-card p-6 mb-12 neon-border">
+  <h2 class="text-2xl font-bold mb-4 futuristic-font">CONTACT US</h2>
+
+  <!-- Contact Form -->
+  <form id="contact-form" class="space-y-4">
+    <div>
+      <label for="name" class="block mb-1">Name</label>
+      <input type="text" id="name" name="name" required
+        class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue">
+    </div>
+    <div>
+      <label for="email" class="block mb-1">Email</label>
+      <input type="email" id="email" name="email" required
+        class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue">
+    </div>
+    <div>
+      <label for="subject" class="block mb-1">Subject</label>
+      <input type="text" id="subject" name="subject" required
+        class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue">
+    </div>
+    <div>
+      <label for="message" class="block mb-1">Message</label>
+      <textarea id="message" name="message" rows="4" required
+        class="w-full p-3 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-neon-blue"></textarea>
+    </div>
+    <button type="submit" class="neon-button px-6 py-3 rounded-full w-full">SEND MESSAGE</button>
+  </form>
+
+  <!-- Status message -->
+  <div id="form-status" class="mt-4 text-center text-sm"></div>
+</section>
+
+<!-- EmailJS Script -->
+<script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+<script>
+  // ✅ Replace this with your real public key
+  emailjs.init("B_DXStIfwPBgIKcQd"); // <-- 👈 Replace this with your EmailJS public key
+
+  const form = document.getElementById("contact-form");
+  const status = document.getElementById("form-status");
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    status.textContent = "⏳ Sending...";
+    status.style.color = "#0ff";
+
+    emailjs.sendForm("service_arcyczl", "template_n6nsraa", this)
+      .then(() => {
+        status.textContent = "✅ Message sent successfully!";
+        status.style.color = "#00ff88";
+        form.reset();
+      })
+      .catch((err) => {
+        status.textContent = "❌ Failed to send. Try again.";
+        status.style.color = "#ff0055";
+        console.error("EmailJS Error:", err);
+      });
+  });
+</script>
         
         <!-- Social Media -->
         <div class="flex justify-center space-x-6 mb-12
