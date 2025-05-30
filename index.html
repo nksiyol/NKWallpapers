@@ -530,7 +530,7 @@
                         }
                     });
 
-                   if (bassEnergy > 50) { // more sensitive to lower bass
+                   if (bassEnergy > 20) { // more sensitive to lower bass
     visualizer.classList.add('bass-pulse');
     setTimeout(() => visualizer.classList.remove('bass-pulse'), 200);
                    }
