@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NK Music Player - Full Screen Visualizer</title>
+    <title>NK Music Player - Interactive Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
@@ -29,21 +29,36 @@
             color: white;
             transition: background 0.5s;
             min-height: 100vh;
-            cursor: none;
+            cursor: crosshair; /* Fallback cursor */
             overflow-x: hidden;
         }
+
+        /* CUSTOM CURSOR FIXED */
+        #cursor-dot {
+            width: 8px; height: 8px; background: var(--primary);
+            position: fixed; border-radius: 50%; z-index: 10000;
+            pointer-events: none; transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px var(--primary);
+        }
+        #cursor-outline {
+            width: 40px; height: 40px; border: 2px solid var(--primary);
+            position: fixed; border-radius: 50%; z-index: 9999;
+            pointer-events: none; transform: translate(-50%, -50%);
+            transition: width 0.2s, height 0.2s, border-color 0.4s;
+            opacity: 0.6;
+        }
         
-        /* CUSTOM CURSOR */
-        #cursor-dot { width: 8px; height: 8px; background: var(--primary); position: fixed; border-radius: 50%; z-index: 9999; pointer-events: none; box-shadow: 0 0 15px var(--primary); }
-        #cursor-outline { width: 40px; height: 40px; border: 2px solid var(--primary); position: fixed; border-radius: 50%; z-index: 9998; pointer-events: none; transition: transform 0.15s ease-out; opacity: 0.5; }
+        /* Cursor behavior on clickable elements */
+        .clickable:hover ~ #cursor-outline, button:hover ~ #cursor-outline, a:hover ~ #cursor-outline {
+            width: 60px; height: 60px; background: rgba(255,255,255,0.1);
+        }
 
         .futuristic-font { font-family: 'Orbitron', sans-serif; }
         
-        /* VISUALIZER */
         #visualizer-wrapper {
             position: relative; width: 450px; height: 450px;
             display: flex; align-items: center; justify-content: center;
-            transition: all 0.5s ease;
+            transition: transform 0.1s ease;
         }
 
         #album-art-container {
@@ -56,17 +71,10 @@
         .emoji-icon { font-size: 100px; color: var(--primary); }
 
         canvas { position: absolute; top: 0; left: 0; }
-        .bass-hit { transform: scale(1.1); }
+        .bass-hit { transform: scale(1.08); }
 
-        /* PROGRESS BAR */
         #progress-bar { appearance: none; height: 10px; background: #111; border-radius: 10px; overflow: hidden; cursor: pointer; }
         #progress-bar::-webkit-slider-thumb { appearance: none; width: 0; box-shadow: -1000px 0 0 1000px var(--primary); }
-
-        /* FULLSCREEN OVERLAY */
-        #main-container:fullscreen {
-            background: var(--bg-dark);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
 
         .neon-btn { border: 2px solid var(--primary); color: var(--primary); transition: 0.3s; background: transparent; }
         .neon-btn:hover { background: var(--primary); color: #000; box-shadow: 0 0 25px var(--primary); }
@@ -78,6 +86,7 @@
 <body class="theme-1">
     <div id="cursor-dot"></div>
     <div id="cursor-outline"></div>
+
     <div id="particles-js" class="fixed inset-0 -z-10"></div>
     
     <div id="main-container" class="container mx-auto px-4 py-8">
@@ -107,12 +116,12 @@
             <div class="bg-white/5 backdrop-blur-2xl p-10 rounded-[40px] border-b-8 shadow-2xl" style="border-color: var(--primary);">
                 <div class="text-center mb-10">
                     <h2 id="current-song" class="text-3xl font-bold truncate futuristic-font">NK Music Player</h2>
-                    <p id="current-artist" class="opacity-60 text-lg mt-2">Professional Visualizer</p>
+                    <p id="current-artist" class="opacity-60 text-lg mt-2">NK Siyol Edition</p>
                 </div>
 
                 <div class="flex justify-center items-center gap-12 mb-10">
                     <button id="prev-btn" class="text-3xl hover:scale-125 transition" style="color:var(--primary)"><i class="fas fa-backward-step"></i></button>
-                    <button id="play-btn" class="w-24 h-24 rounded-full border-4 flex items-center justify-center text-4xl hover:scale-110 transition shadow-lg" style="border-color:var(--primary); box-shadow: 0 0 25px var(--glow)">
+                    <button id="play-btn" class="w-24 h-24 rounded-full border-4 flex items-center justify-center text-4xl hover:scale-110 transition" style="border-color:var(--primary); box-shadow: 0 0 25px var(--glow)">
                         <i class="fas fa-play"></i>
                     </button>
                     <button id="next-btn" class="text-3xl hover:scale-125 transition" style="color:var(--primary)"><i class="fas fa-forward-step"></i></button>
@@ -131,47 +140,44 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-10 mt-16">
             <div id="drop-zone" class="p-16 rounded-[30px] border-2 border-dashed flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition" style="border-color:var(--primary)">
                 <i class="fas fa-cloud-arrow-up text-6xl mb-6" style="color:var(--primary)"></i>
-                <h3 class="text-2xl font-bold futuristic-font">DRAG & DROP</h3>
+                <h3 class="text-2xl font-bold futuristic-font">UPLOAD MP3</h3>
                 <input type="file" id="file-input" multiple class="hidden" accept="audio/*">
             </div>
-            <div class="bg-white/5 p-8 rounded-[30px] border border-white/10">
-                <h3 class="futuristic-font text-sm mb-6 opacity-60">MY PLAYLIST</h3>
-                <ul id="playlist" class="space-y-3 max-h-48 overflow-y-auto pr-4 custom-scroll"></ul>
+            <div class="bg-white/5 p-8 rounded-[30px]">
+                <h3 class="futuristic-font text-xs mb-6 opacity-60">PLAYLIST</h3>
+                <ul id="playlist" class="space-y-3 max-h-48 overflow-y-auto pr-4"></ul>
             </div>
         </div>
 
-        <footer class="mt-24 pb-10 flex flex-col items-center border-t border-white/10 pt-12">
-            <p class="futuristic-font text-xs tracking-[0.3em] mb-8 opacity-50">GET IN TOUCH</p>
-            <div class="flex gap-12">
-                <a href="https://instagram.com/nk.siyol" target="_blank" class="social-icon" title="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="https://t.me/nk_siyol" target="_blank" class="social-icon" title="Telegram"><i class="fab fa-telegram"></i></a>
+        <footer class="mt-20 pb-10 flex flex-col items-center">
+            <div class="flex gap-12 mb-8">
+                <a href="https://instagram.com/nk.siyol" target="_blank" class="social-icon"><i class="fab fa-instagram"></i></a>
+                <a href="https://t.me/nk_siyol" target="_blank" class="social-icon"><i class="fab fa-telegram"></i></a>
             </div>
-            <div class="mt-12 text-center opacity-30 text-[10px] max-w-2xl leading-relaxed">
-                <p>The **NK Music Player** is a state-of-the-art **Circular Audio Visualizer** by NK Siyol. Designed for **Bass Enthusiasts**, it features **High Fidelity Beat Analysis** and **Responsive Neon Themes**. Optimize your music journey with our **Fullscreen HTML5 Visualizer**. Contact **nk.siyol** for more futuristic web tools.</p>
-            </div>
+            <p class="opacity-20 text-[10px] text-center">NK Music Player © 2026 | Designed by NK Siyol</p>
         </footer>
     </div>
 
     <script>
-        // CURSOR
+        // CURSOR SCRIPT FIXED
         const dot = document.getElementById('cursor-dot');
         const outline = document.getElementById('cursor-outline');
+
         window.addEventListener('mousemove', (e) => {
-            dot.style.left = e.clientX + 'px'; dot.style.top = e.clientY + 'px';
-            outline.animate({ left: e.clientX - 20 + 'px', top: e.clientY - 20 + 'px' }, { duration: 500, fill: "forwards" });
+            const posX = e.clientX;
+            const posY = e.clientY;
+
+            dot.style.left = `${posX}px`;
+            dot.style.top = `${posY}px`;
+
+            // Smooth delay for outline
+            outline.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 400, fill: "forwards" });
         });
 
-        // FULLSCREEN
-        function toggleFullScreen() {
-            let elem = document.documentElement;
-            if (!document.fullscreenElement) {
-                elem.requestFullscreen().catch(err => alert(`Error: ${err.message}`));
-            } else {
-                document.exitFullscreen();
-            }
-        }
-
-        // THEME
+        // Theme and Audio Logic (Same as before)
         let themeIdx = 1;
         function nextTheme() {
             document.body.classList.remove(`theme-${themeIdx}`);
@@ -181,7 +187,11 @@
             if(window.pJSDom[0]) { window.pJSDom[0].pJS.particles.color.value = primary; window.pJSDom[0].pJS.fn.particlesRefresh(); }
         }
 
-        // AUDIO
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) { document.documentElement.requestFullscreen(); } 
+            else { document.exitFullscreen(); }
+        }
+
         const audio = new Audio();
         let audioContext, analyser, dataArray, source;
         let tracks = [];
@@ -227,11 +237,10 @@
             }
         }
 
-        // FILES
         const dropZone = document.getElementById('drop-zone');
         const fileInput = document.getElementById('file-input');
         dropZone.onclick = () => fileInput.click();
-        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.style.background = 'rgba(255,255,255,0.1)'; });
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.style.background = 'rgba(255,255,255,0.05)'; });
         dropZone.addEventListener('dragleave', () => dropZone.style.background = 'transparent');
         dropZone.addEventListener('drop', (e) => { e.preventDefault(); handleFiles(e.dataTransfer.files); });
         fileInput.onchange = (e) => handleFiles(e.target.files);
@@ -299,7 +308,7 @@
         document.getElementById('prev-btn').onclick = () => { if(currentTrackIndex > 0) playTrack(currentTrackIndex-1) };
 
         particlesJS('particles-js', {
-            particles: { number: { value: 60 }, color: { value: '#00f0ff' }, line_linked: { enable: true, opacity: 0.1 }, move: { speed: 2.5 } }
+            particles: { number: { value: 60 }, color: { value: '#00f0ff' }, line_linked: { enable: true, opacity: 0.1 }, move: { speed: 2 } }
         });
     </script>
 </body>
